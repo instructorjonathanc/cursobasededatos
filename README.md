@@ -1,1 +1,1 @@
-# cursobasededatos
+# Querys actualizados del curso
