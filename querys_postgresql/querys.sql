@@ -1,12 +1,13 @@
--- tabla
+
+-- crear tabla
 CREATE TABLE public.users
 (
   id_user integer NOT NULL DEFAULT nextval('users_id_user_seq'::regclass),
-  first_name character varying(30),
-  last_name character varying(30),
-  email character varying(30),
+  first_name character varying(50),
+  last_name character varying(50),
+  email character varying(50),
   password character varying(100),
-  creadet_at date,
+  creaded_at date,
   CONSTRAINT pk_users PRIMARY KEY (id_user),
   CONSTRAINT uq_email UNIQUE (email)
 )
@@ -18,94 +19,296 @@ ALTER TABLE public.users
 
 
 
-
--- seleccionar registros
+-- seleccionar todo
 select * from users;
 
-select first_name from users;
+select id_user,first_name
+from users;
 
-select email from users where id_user=1;
+-- seleccionar con condiciones
+select id_user,first_name,email
+from users
+where id_user = 1;
+
+select id_user,first_name,email
+from users
+where id_user = 2;
 
 
-select email from users where id_user=2;
+select id_user as identificador,last_name as apellido,email as correo
+from users
+where id_user < 2;
+
+delete from users
+where id_user = 3;
 
 
-select first_name as nombre from users;
 
--- comentarios de una linea y bloques
+select id_user as identificador,last_name as apellido,email as correo
+from users
+where id_user < 2;
 
---select * from users;
+delete from users
+where id_user = 3;
+
+insert into users (first_name,last_name,email,password,creaded_at)
+values ('jose','martinez','jose@hotmail.com',md5('123'),now());
+
+insert into users (first_name,last_name,email,password,creaded_at)
+values ('john','smith','john@hotmail.com',md5('1234'),now()),
+('jairo','montoya','jairo@hotmail.com',md5('12345'),now());
+
+
+update users set password = md5('123')
+where id_user < 3;
+
+update users set first_name = 'martin',last_name = 'azabache' 
+where id_user = 6;
+
+
+
+
+create table price(
+id serial not null primary key,
+price decimal check(price < 100),
+cost integer unique
+);
+
+alter table price
+add column test char(100);
+
+select * from price;
+
+insert into price
+values (10,20);
+
+insert into price (price,cost)
+values (70,50);
+
+alter table price create index nnull to test;
+
+alter table price
+alter column test set not null;
+
+update price set test = 'actualizar'
+where id < 11; 
+
+alter table price
+drop column test;
+
+
+select id as idp,price as precio,cost as costo
+from price;
+
+select id as idp,price as precio,cost as costo
+from price
+where price
+between 1 and 35;
+
+select id as idp,price as precio,cost as costo
+from price
+where price
+between 19 and 100;
+
+select id as idp,price as precio,cost as costo
+from price
+where price
+between 19 and 100
+order by id desc;
+
+select id as idp,price as precio,cost as costo
+from price
+where price
+between 19 and 100
+order by id asc;
+
+select id as idp,price as precio,cost as costo
+from price
+where price
+between 19 and 100
+limit 1;
+
+
+
+-- funcion de fechas
+select now() as fecha;
+
+select current_date as fecha;
+
+select current_time as fecha;
 
 /*
-select first_name from users;
-
-select email from users where id_user=1;
+funcion uno
+funcion dos
+sdsdsd
 */
 
--- insertar registros
-insert into users (first_name,last_name,email,password,creaded_at)
-    values('john','ramirez','john@gmail.com',md5('123'),now());
+select current_timestamp as fecha;
 
-    insert into users (first_name,last_name,email,password,creaded_at)
-        values('susan','pacheco','susan@gmail.com',md5('1234'),now()),
-        ('jairo','bonilla','jairo@hotmail.com',md5('12345'),now());
 
--- eliminar registros
-delete from users
-    where id_user = 5;
 
--- eliminar con condiciones, se deben cumplir las 2 condiciones
-delete from users
-    where id_user = 4 and first_name = 'susan';
+-- normalizacion
 
--- eliminar con condiciones, se debe cumplir 1 condicion
-delete from users
-    where id_user = 3 or first_name = 'jose';
+create table personas(
+id_persona integer,
+nombre text,
+edad integer
+);
 
--- actualizar registros
-update users set email = 'user@hotmail.com'
-    where email = 'juan@hotmail.com';
+insert into personas
+values (1,'jonathan',30);
 
--- crear tablas
-create table roles(
-    id_role integer,
-    role char
+
+insert into personas
+values (1,'jonathan',20);
+
+insert into personas
+values (2,'jose',18);
+
+insert into personas
+values (2,'jose');
+
+select * from personas;
+
+-- 1FN
+select * from personas
+where id_persona = 1;
+
+select * from personas
+where id_persona = 2;
+
+
+select * from personas;
+
+select * from prueba;
+
+create table personas(
+id_persona integer,
+nombre text,
+edad integer
+);
+
+create table prueba(
+id_prueba integer,
+nombre text
+);
+
+insert into prueba
+values (1,'asas'),
+(1,'algo');
+
+drop table prueba;
+
+truncate table personas;
+
+
+
+
+
+
+
+
+create table dev.users(
+id_user integer,
+img character varying(50),
+first_name character varying(50),
+last_name character varying(50),
+email character varying(50),
+password character varying(100),
+id_role integer,
+id_country integer,
+id_state integer,
+creadet_at date,
+updated_at date,
+last_access character varying(50),
+constraint pk_users primary key(id_user),
+constraint uq_email unique(email)
 
 );
 
--- modificar tablas
-alter table roles add column test char;
 
--- eliminar tablas
-alter table users drop column test;
+create table dev.roles(
+id_role integer,
+role character varying(50),
+constraint pk_roles primary key(id_role)
+);
 
--- eliminar tablas
-drop table roles;
+create table dev.countrys(
+id_country integer,
+country character varying(50),
+constraint pk_countrys primary key(id_country)
+);
+
+
+alter table dev.users
+add constraint fk_role
+foreign key(id_role) references dev.roles(id_role); 
 
 
 
--- crear indices
-create unique index uq_id on test(id_test);
 
--- seleccionar entre rangos
-select first_name as nombre, last_name as apellido
+
+
+select * from users;
+
+alter table users
+add column price int;
+
+
+alter table users
+add column quantity int;
+
+
+alter table users
+rename column password to total;
+
+
+update users set price = 10
+where id_user < 2;
+
+update users set price = 30
+where id_user = 2;
+
+update users set quantity = 75
+where id_user > 1;
+
+select * from users;
+
+select id_user,email,price
 from users
-where creaded_at
-between '2010-01-10' and '2011-02-11';
+where price IS NULL;
 
--- modo ascendente
-select first_name as nombre, last_name as apellido
-from users
-where creaded_at
-between '2010-01-10' and '2011-02-11'
-order by nombre asc;
+select id_user,price,quantity,price*quantity as totaloperacion
+from users;
 
--- modo descendiente
-select first_name as nombre, last_name as apellido
+select id_user,price,quantity,price+quantity as totaloperacion
+from users;
+
+select id_user,price,quantity,price-quantity as totaloperacion
+from users;
+
+select id_user,price,quantity,price/quantity as totaloperacion
+from users;
+
+
+select id_user,price,quantity,price+quantity
+from users;
+
+select * from users;
+
+update users set quantity = 20
+where quantity IS NULL;
+
+update users set price = 20
+where price IS NULL;
+
+
+
+select id_user,email,concat(first_name,':',last_name) as "concatenacion"
 from users
-where creaded_at
-between '2010-01-10' and '2011-02-11'
-order by nombre desc;
+where id_user = 7;
+
+
 
 -- conectar por consola con el comando psql
 psql -h localhost -U postgres -d postgres
@@ -350,14 +553,16 @@ insert into states (state,id_country)
 END;
 $insertarpaises$ LANGUAGE plpgsql;
 
--- listar todas las base de datos
-SELECT datname FROM pg_database;
 
--- volver una base de datos normal a espacial
-   CREATE EXTENSION postgis;
 
--- version de postgresl
-SELECT version(); 
 
--- funcion por defecto de postgis
-   SELECT postgis_full_version();
+
+select datname from pg_database;
+
+select version();
+
+create database db_gis;
+
+CREATE EXTENSION postgis;
+
+select postgis_full_version();
